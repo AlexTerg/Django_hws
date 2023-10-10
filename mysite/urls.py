@@ -16,11 +16,12 @@ Including another URLconf
 """
 from hws import views
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('add_user/', views.add_user, name='add_user'),
     path('add_product/', views.add_product, name='add_product'),
     path('add_orders/', views.add_orders, name='add_orders'),
+    path('hw3/', include('hws.urls')),
 ]

@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timedelta, datetime
 import random
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -46,3 +46,21 @@ def add_orders(request):
         
         
     return HttpResponse(lst_order)
+
+def index(request):
+    return render(request, 'base.html')
+
+def get_user_orders(request, user_id, days_ago):
+    products = []
+    product_lst =[]
+    date_now = datetime.now()
+    date_before = date_now - timedelta(days=days_ago)
+    user = User.objects.filter(pk=user_id).first()
+    orders = Order.objects.filter(customer=user, date_ordered__range=(date_before, date_now)).all()
+    for order in orders:
+        products = order.products.all()
+        for product in products:
+            if product not in product_lst:
+                product_lst.append(product)
+
+    return render(request, 'user_orders.html', {'user': user, 'product_lst': product_lst, 'day': days_ago})
