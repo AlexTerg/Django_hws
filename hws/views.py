@@ -3,6 +3,8 @@ import random
 from django.http import HttpResponse
 from django.shortcuts import render
 from hws.models import User, Product, Order
+from hws.forms import ImageForm
+from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 
@@ -64,3 +66,19 @@ def get_user_orders(request, user_id, days_ago):
                 product_lst.append(product)
 
     return render(request, 'user_orders.html', {'user': user, 'product_lst': product_lst, 'day': days_ago})
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageForm(request.POST)
+        product_id = form.data['product']
+        product = Product.objects.filter(pk=product_id).first()
+        image = request.FILES['img']
+        product.product_img = image
+        product.save()
+        storage = FileSystemStorage()
+        storage.save(image.name, image)
+    else:
+        form = ImageForm()
+    
+    return render(request, 'upload_image.html', {'form': form})
+    
